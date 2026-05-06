@@ -1,0 +1,34 @@
+Decisiones de Diseño
+
+1. Herencia + polimorfismo en lugar de condicionales
+La decisión más importante del sistema fue evitar estructuras if/else o switch basadas en el tipo de vehículo para calcular costos y espacios. En cambio, se modeló una jerarquía de clases donde cada subclase (Moto, Auto, Camion) sobreescribe los métodos calcularCosto() y getEspaciosOcupados() con su propio comportamiento.
+Esto significa que el Garage nunca necesita saber qué tipo de vehículo está manejando: simplemente llama a v.calcularCosto() y cada objeto responde de forma correcta según su tipo real. Si en el futuro se agrega un nuevo tipo (por ejemplo, Bicicleta), basta con crear una nueva subclase sin tocar ninguna lógica existente.
+
+2. Interfaces Calculable y Mostrable
+Se definieron dos interfaces separadas para respetar el principio de responsabilidad única y el de segregación de interfaces. Calculable obliga a implementar el cálculo de costo, y Mostrable obliga a implementar la presentación de datos.
+Aunque en este sistema ambas las implementa Vehiculo, tenerlas como interfaces independientes permite que en el futuro otros objetos (como un Reporte, por ejemplo) puedan ser Mostrable sin necesidad de ser Calculable.
+
+3. Clase abstracta Vehiculo
+Se eligió clase abstracta (y no interfaz) para Vehiculo porque los vehículos comparten atributos concretos (patente, marca, modelo, horasEstimadas) y comportamiento parcialmente compartido (mostrarDatos()). Una interfaz no puede tener estado, por lo que no era la herramienta adecuada.
+El método getEspaciosOcupados() se declaró abstracto para forzar que cada subclase defina su propio valor, lo que elimina la posibilidad de olvidar implementarlo.
+
+4. ArrayList<Vehiculo> como colección principal
+Se optó por ArrayList sobre otras colecciones porque:
+
+El acceso secuencial (listar, buscar, recorrer para reportes) es la operación más frecuente.
+La cantidad de vehículos en un garage es acotada y conocida por su capacidad máxima, por lo que el costo de redimensionamiento no es un problema práctico.
+La búsqueda por patente se realiza con un recorrido lineal simple, lo cual es suficiente para el volumen de datos esperado.
+
+5. Excepciones personalizadas
+Se crearon cuatro excepciones que extienden Exception (checked exceptions). Esto obliga al código que llama a los métodos del Garage a manejar explícitamente cada caso de error, haciendo el sistema más autodocumentado.
+
+GarageLlenoException: se lanza cuando no hay espacio suficiente para el vehículo que intenta ingresar.
+PatenteDuplicadaException: se lanza al intentar registrar una patente ya existente.
+VehiculoNoEncontradoException: se lanza al intentar dar salida a una patente que no está en el sistema.
+HorasInvalidasException: se lanza cuando el usuario ingresa un valor de horas menor o igual a cero.
+
+6. Separación de responsabilidades entre Garage y Main
+La clase Garage contiene exclusivamente lógica de negocio: no sabe nada sobre cómo se muestra la información al usuario. Main es quien se encarga de toda la interacción con el usuario a través de JOptionPane. Esta separación permite que en el futuro la interfaz pueda cambiarse (por ejemplo, a una GUI con Swing completo o a una API REST) sin modificar la lógica del garage.
+
+7. Interfaz por ventanas emergentes 
+Elegi JOptionPane sobre la consola porque permite una experiencia más guiada: el usuario selecciona opciones con botones en lugar de tipear números, lo que reduce los errores de entrada. Los menús con showOptionDialog presentan las opciones como botones clickeables, y los datos se ingresan mediante showInputDialog con validación en bucle hasta recibir un valor correcto.
