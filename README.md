@@ -10,7 +10,7 @@ Cómo ejecutar
 Clonar el repositorio:
 
 bash   
-git clone https://github.com/tu-usuario/GarageSystem.git
+git clone (https://github.com/paulapanetta/paulapanetta-parcial1-progavanzada.git)
 
 Abrir el proyecto en IntelliJ IDEA.
 Ejecutar la clase Main.java.
